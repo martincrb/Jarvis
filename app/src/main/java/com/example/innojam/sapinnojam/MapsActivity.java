@@ -34,16 +34,21 @@ public class MapsActivity extends FragmentActivity {
             JSONArray points = route.getJSONArray("routes");
             for (int i = 0; i < points.length(); i++) {
                 JSONObject point = points.getJSONObject(i);
-                JSONArray leg = point.getJSONArray("legs");
-                
-                for (int j = 0; j < leg.length(); j++) {
-                    JSONObject l = leg.getJSONObject("")
-                    JSONArray step = leg.getJSONArray(j);
-                    for (int k = 0; k < step.length(); k++) {
-                        JSONObject p = step.getJSONObject(k);
-                        Double lat = p.getDouble("lat");
-                        Double lon = p.getDouble("lng");
+                JSONArray legs = point.getJSONArray("legs");
+                for (int j = 0; j < legs.length(); j++) {
+                    JSONObject l = legs.getJSONObject(j);
+                    JSONArray steps = l.getJSONArray("steps");
+                    for (int k = 0; k < steps.length(); k++) {
+                        JSONObject p = steps.getJSONObject(k);
+                        JSONObject sl = p.getJSONObject("start_location");
+                        Double lat = sl.getDouble("lat");
+                        Double lon = sl.getDouble("lng");
                         list.add(new LatLng(lat, lon));
+                        JSONObject el = p.getJSONObject("start_location");
+                        lat = el.getDouble("lat");
+                        lon = el.getDouble("lng");
+                        list.add(new LatLng(lat, lon));
+
                     }
                 }
 
