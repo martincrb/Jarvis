@@ -1,22 +1,63 @@
 package com.example.innojam.sapinnojam;
 
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
+    private Polyline line;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+        String jsonData = getIntent().getStringExtra("RouteJSON");
+        ArrayList<LatLng> list = new ArrayList<LatLng>();
+        try {
+            JSONObject route = new JSONObject(jsonData);
+            JSONArray points = route.getJSONArray("routes");
+            for (int i = 0; i < points.length(); i++) {
+                JSONObject point = points.getJSONObject(i);
+                JSONArray leg = point.getJSONArray("legs");
+                
+                for (int j = 0; j < leg.length(); j++) {
+                    JSONObject l = leg.getJSONObject("")
+                    JSONArray step = leg.getJSONArray(j);
+                    for (int k = 0; k < step.length(); k++) {
+                        JSONObject p = step.getJSONObject(k);
+                        Double lat = p.getDouble("lat");
+                        Double lon = p.getDouble("lng");
+                        list.add(new LatLng(lat, lon));
+                    }
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE).geodesic(true);
+        for (int z = 0; z < list.size(); z++) {
+            LatLng point = list.get(z);
+            options.add(point);
+        }
+        line = mMap.addPolyline(options);
     }
 
     @Override

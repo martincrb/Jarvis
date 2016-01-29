@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import com.loopj.android.http.*;
 
+import java.nio.charset.StandardCharsets;
+
+import cz.msebera.android.httpclient.entity.mime.Header;
 
 public class RoutesActivity extends Activity {
     Button b;
@@ -22,8 +27,36 @@ public class RoutesActivity extends Activity {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, MapsActivity.class);
-                startActivity(intent);
+                //new RouteRequest().execute("https://maps.googleapis.com/maps/api/directions/json?origin=Chicago,IL&destination=Los+Angeles,CA&waypoints=Joplin,MO|Oklahoma+City,OK&key=AIzaSyA1JXLwILX2NFT3Q3qtJBmrGV1nCOzIocM");
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.get("https://maps.googleapis.com/maps/api/directions/json?origin=Chicago,IL&destination=Los+Angeles,CA&waypoints=Joplin,MO|Oklahoma+City,OK&key=AIzaSyA1JXLwILX2NFT3Q3qtJBmrGV1nCOzIocM", new AsyncHttpResponseHandler() {
+
+                    @Override
+                    public void onStart() {
+                        // called before request is started
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                        String res = new String(responseBody, StandardCharsets.UTF_8);
+                        Log.d("AWA", res);
+                        Intent intent = new Intent(context, MapsActivity.class);
+                        intent.putExtra("RouteJSON", res);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+
+                    }
+
+                    @Override
+                    public void onRetry(int retryNo) {
+                        // called when request is retried
+                    }
+                });
+
+
             }
         });
     }
